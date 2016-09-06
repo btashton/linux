@@ -131,8 +131,12 @@ static int dnv_setup(struct mid8250 *mid, struct uart_port *p)
 	unsigned int bar = FL_GET_BASE(mid->board->flags);
 	int ret;
 
+	ret = pci_alloc_irq_vectors(pdev, 1, 1, PCI_IRQ_ALL_TYPES);
+	if (ret < 0)
+		return ret;
+
 	chip->dev = &pdev->dev;
-	chip->irq = pdev->irq;
+	chip->irq = pci_irq_vector(pdev, 0);
 	chip->regs = p->membase;
 	chip->length = pci_resource_len(pdev, bar);
 	chip->offset = DNV_DMA_CHAN_OFFSET;
@@ -262,7 +266,7 @@ static int mid8250_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	memset(&uart, 0, sizeof(struct uart_8250_port));
 
 	uart.port.dev = &pdev->dev;
-	uart.port.irq = pdev->irq;
+	uart.port.irq = pci_irq_vector(pdev, 0);
 	uart.port.private_data = mid;
 	uart.port.type = PORT_16750;
 	uart.port.iotype = UPIO_MEM;
