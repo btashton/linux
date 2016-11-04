@@ -686,20 +686,13 @@ static int bcm_resource(struct acpi_resource *ares, void *data)
 	/* Always tell the ACPI core to skip this resource */
 	return 1;
 }
+#endif /* CONFIG_ACPI */
 
-static int bcm_acpi_probe(struct bcm_device *dev)
+static int bcm_platform_probe(struct bcm_device *dev)
 {
 	struct platform_device *pdev = dev->pdev;
-	LIST_HEAD(resources);
-	const struct dmi_system_id *dmi_id;
-	int ret;
 
-	/* Retrieve GPIO data */
 	dev->name = dev_name(&pdev->dev);
-	ret = acpi_dev_add_driver_gpios(ACPI_COMPANION(&pdev->dev),
-					acpi_bcm_default_gpios);
-	if (ret)
-		return ret;
 
 	dev->clk = devm_clk_get(&pdev->dev, NULL);
 
@@ -737,6 +730,27 @@ static int bcm_acpi_probe(struct bcm_device *dev)
 		return -EINVAL;
 	}
 
+	return 0;
+}
+
+#ifdef CONFIG_ACPI
+static int bcm_acpi_probe(struct bcm_device *dev)
+{
+	struct platform_device *pdev = dev->pdev;
+	const struct dmi_system_id *dmi_id;
+	LIST_HEAD(resources);
+	int ret;
+
+	/* Retrieve GPIO data */
+	ret = acpi_dev_add_driver_gpios(ACPI_COMPANION(&pdev->dev),
+					acpi_bcm_default_gpios);
+	if (ret)
+		return ret;
+
+	ret = bcm_platform_probe(dev);
+	if (ret)
+		return ret;
+
 	/* Retrieve UART ACPI info */
 	ret = acpi_dev_get_resources(ACPI_COMPANION(&dev->pdev->dev),
 				     &resources, bcm_resource, dev);
@@ -771,7 +785,10 @@ static int bcm_probe(struct platform_device *pdev)
 
 	dev->pdev = pdev;
 
-	ret = bcm_acpi_probe(dev);
+	if (has_acpi_companion(&pdev->dev))
+		ret = bcm_acpi_probe(dev);
+	else
+		ret = bcm_platform_probe(dev);
 	if (ret)
 		return ret;
 
@@ -797,7 +814,8 @@ static int bcm_remove(struct platform_device *pdev)
 	list_del(&dev->list);
 	mutex_unlock(&bcm_device_lock);
 
-	acpi_dev_remove_driver_gpios(ACPI_COMPANION(&pdev->dev));
+	if (has_acpi_companion(&pdev->dev))
+		acpi_dev_remove_driver_gpios(ACPI_COMPANION(&pdev->dev));
 
 	dev_info(&pdev->dev, "%s device unregistered.\n", dev->name);
 
