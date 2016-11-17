@@ -81,6 +81,7 @@ static LIST_HEAD(bcm_device_list);
 
 static int bcm_set_baudrate(struct hci_uart *hu, unsigned int speed)
 {
+	return 0;
 	struct hci_dev *hdev = hu->hdev;
 	struct sk_buff *skb;
 	struct bcm_update_uart_baud_rate param;
