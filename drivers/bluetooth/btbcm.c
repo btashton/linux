@@ -281,6 +281,7 @@ int btbcm_initialize(struct hci_dev *hdev, char *fw_name, size_t len)
 	struct sk_buff *skb;
 	struct hci_rp_read_local_version *ver;
 	int i, err;
+	BT_INFO("ABOUT TO RESET INITIALIZE");
 
 	/* Reset */
 	err = btbcm_reset(hdev);
@@ -325,6 +326,7 @@ int btbcm_initialize(struct hci_dev *hdev, char *fw_name, size_t len)
 	BT_INFO("%s: %s (%3.3u.%3.3u.%3.3u) build %4.4u", hdev->name,
 		hw_name ? : "BCM", (subver & 0xe000) >> 13,
 		(subver & 0x1f00) >> 8, (subver & 0x00ff), rev & 0x0fff);
+	BT_INFO("COMPLETED INITIALIZE");
 
 	return 0;
 }
@@ -336,6 +338,8 @@ int btbcm_finalize(struct hci_dev *hdev)
 	struct hci_rp_read_local_version *ver;
 	u16 subver, rev;
 	int err;
+
+	BT_INFO("ABOUT TO RESET FINALIZE");
 
 	/* Reset */
 	err = btbcm_reset(hdev);
@@ -359,6 +363,7 @@ int btbcm_finalize(struct hci_dev *hdev)
 	btbcm_check_bdaddr(hdev);
 
 	set_bit(HCI_QUIRK_STRICT_DUPLICATE_FILTER, &hdev->quirks);
+	BT_INFO("FINALIZED");
 
 	return 0;
 }
@@ -469,15 +474,18 @@ int btbcm_setup_patchram(struct hci_dev *hdev)
 		BT_INFO("%s: BCM: Patch %s not found", hdev->name, fw_name);
 		goto done;
 	}
-
+	BT_INFO("ABOUT TO PATCHRAM");
 	btbcm_patchram(hdev, fw);
 
+	BT_INFO("ABOUT TO RELEASE FIRMWARE");
 	release_firmware(fw);
 
 	/* Reset */
+	BT_INFO("ABOUT TO RESET POST FIRMWARE");
 	err = btbcm_reset(hdev);
 	if (err)
 		return err;
+	BT_INFO("HARDWARE BACK UP");
 
 	/* Read Local Version Info */
 	skb = btbcm_read_local_version(hdev);
@@ -505,6 +513,7 @@ done:
 	btbcm_check_bdaddr(hdev);
 
 	set_bit(HCI_QUIRK_STRICT_DUPLICATE_FILTER, &hdev->quirks);
+	BT_INFO("FININISHED FIRMWARE SETUP");
 
 	return 0;
 }
