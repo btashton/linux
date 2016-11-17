@@ -81,11 +81,11 @@ static LIST_HEAD(bcm_device_list);
 
 static int bcm_set_baudrate(struct hci_uart *hu, unsigned int speed)
 {
-	return 0;
 	struct hci_dev *hdev = hu->hdev;
 	struct sk_buff *skb;
 	struct bcm_update_uart_baud_rate param;
 
+	speed = 3000000;
 	if (speed > 3000000) {
 		struct bcm_write_uart_clock_setting clock;
 
@@ -392,7 +392,7 @@ static int bcm_setup(struct hci_uart *hu)
 		speed = hu->proto->init_speed;
 	else
 		speed = 0;
-
+	speed = 3000000;
 	if (speed)
 		hci_uart_set_baudrate(hu, speed);
 
@@ -403,7 +403,7 @@ static int bcm_setup(struct hci_uart *hu)
 		speed = hu->proto->oper_speed;
 	else
 		speed = 0;
-
+	speed = 3000000;
 	if (speed) {
 		err = bcm_set_baudrate(hu, speed);
 		if (!err)
