@@ -84,6 +84,7 @@ static int bcm_set_baudrate(struct hci_uart *hu, unsigned int speed)
 	struct hci_dev *hdev = hu->hdev;
 	struct sk_buff *skb;
 	struct bcm_update_uart_baud_rate param;
+	BT_INFO("SETTING BAUDRATE");
 
 	speed = 3000000;
 	if (speed > 3000000) {
@@ -125,6 +126,7 @@ static int bcm_set_baudrate(struct hci_uart *hu, unsigned int speed)
 	}
 
 	kfree_skb(skb);
+	BT_INFO("BAUDRATE SET");
 
 	return 0;
 }

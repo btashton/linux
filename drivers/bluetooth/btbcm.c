@@ -103,6 +103,21 @@ int btbcm_set_bdaddr(struct hci_dev *hdev, const bdaddr_t *bdaddr)
 }
 EXPORT_SYMBOL_GPL(btbcm_set_bdaddr);
 
+static int btbcm_reset(struct hci_dev *hdev)
+{
+	struct sk_buff *skb;
+
+	skb = __hci_cmd_sync(hdev, HCI_OP_RESET, 0, NULL, HCI_INIT_TIMEOUT);
+	if (IS_ERR(skb)) {
+		int err = PTR_ERR(skb);
+		BT_ERR("%s: BCM: Reset failed (%d)", hdev->name, err);
+		return err;
+	}
+	kfree_skb(skb);
+
+	return 0;
+}
+
 int btbcm_patchram(struct hci_dev *hdev, const struct firmware *fw)
 {
 	const struct hci_command_hdr *cmd;
@@ -112,6 +127,7 @@ int btbcm_patchram(struct hci_dev *hdev, const struct firmware *fw)
 	u16 opcode;
 	int err = 0;
 
+	BT_INFO("PATCHRAM APPLYING");
 	/* Start Download */
 	skb = __hci_cmd_sync(hdev, 0xfc2e, 0, NULL, HCI_INIT_TIMEOUT);
 	if (IS_ERR(skb)) {
@@ -162,24 +178,12 @@ int btbcm_patchram(struct hci_dev *hdev, const struct firmware *fw)
 	msleep(250);
 
 done:
+	BT_INFO("PATCHRAM NEW RESET");
+	err = btbcm_reset(hdev);
+	BT_INFO("PATCHRAM RETURNING");
 	return err;
 }
 EXPORT_SYMBOL(btbcm_patchram);
-
-static int btbcm_reset(struct hci_dev *hdev)
-{
-	struct sk_buff *skb;
-
-	skb = __hci_cmd_sync(hdev, HCI_OP_RESET, 0, NULL, HCI_INIT_TIMEOUT);
-	if (IS_ERR(skb)) {
-		int err = PTR_ERR(skb);
-		BT_ERR("%s: BCM: Reset failed (%d)", hdev->name, err);
-		return err;
-	}
-	kfree_skb(skb);
-
-	return 0;
-}
 
 static struct sk_buff *btbcm_read_local_name(struct hci_dev *hdev)
 {
@@ -395,6 +399,7 @@ int btbcm_setup_patchram(struct hci_dev *hdev)
 	struct sk_buff *skb;
 	struct hci_rp_read_local_version *ver;
 	int i, err;
+	BT_INFO("ABOUT TO RESET SETUP PATCHRAM");
 
 	/* Reset */
 	err = btbcm_reset(hdev);
