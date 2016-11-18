@@ -86,7 +86,6 @@ static int bcm_set_baudrate(struct hci_uart *hu, unsigned int speed)
 	struct bcm_update_uart_baud_rate param;
 	BT_INFO("SETTING BAUDRATE");
 
-	speed = 3000000;
 	if (speed > 3000000) {
 		struct bcm_write_uart_clock_setting clock;
 
@@ -394,7 +393,6 @@ static int bcm_setup(struct hci_uart *hu)
 		speed = hu->proto->init_speed;
 	else
 		speed = 0;
-	speed = 3000000;
 	if (speed)
 		hci_uart_set_baudrate(hu, speed);
 
@@ -405,7 +403,6 @@ static int bcm_setup(struct hci_uart *hu)
 		speed = hu->proto->oper_speed;
 	else
 		speed = 0;
-	speed = 3000000;
 	if (speed) {
 		err = bcm_set_baudrate(hu, speed);
 		if (!err)
@@ -829,8 +826,8 @@ static const struct hci_uart_proto bcm_proto = {
 	.id		= HCI_UART_BCM,
 	.name		= "Broadcom",
 	.manufacturer	= 15,
-	.init_speed	= 3000000,
-	.oper_speed	= 3000000, /* 4000000, */
+	.init_speed	= 115200,
+	.oper_speed	= 115200, /* 4000000, */
 	.open		= bcm_open,
 	.close		= bcm_close,
 	.flush		= bcm_flush,
