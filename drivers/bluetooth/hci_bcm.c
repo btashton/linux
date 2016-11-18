@@ -380,13 +380,13 @@ static int bcm_setup(struct hci_uart *hu)
 		bt_dev_info(hu->hdev, "BCM: Patch %s not found", fw_name);
 		return 0;
 	}
-
+/*
 	err = btbcm_patchram(hu->hdev, fw);
 	if (err) {
 		bt_dev_info(hu->hdev, "BCM: Patch failed (%d)", err);
 		goto finalize;
 	}
-
+*/
 	/* Init speed if any */
 	if (hu->init_speed)
 		speed = hu->init_speed;
@@ -834,7 +834,7 @@ static const struct hci_uart_proto bcm_proto = {
 	.open		= bcm_open,
 	.close		= bcm_close,
 	.flush		= bcm_flush,
-	.setup		= bcm_patchram_setup,
+	.setup		= bcm_setup,
 	.set_baudrate	= bcm_set_baudrate,
 	.recv		= bcm_recv,
 	.enqueue	= bcm_enqueue,

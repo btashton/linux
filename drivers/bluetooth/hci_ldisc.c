@@ -349,7 +349,7 @@ void hci_uart_set_baudrate(struct hci_uart *hu, unsigned int speed)
 	/* tty_set_termios() return not checked as it is always 0 */
 	tty_set_termios(tty, &ktermios);
 
-	BT_DBG("%s: New tty speeds: %d/%d", hu->hdev->name,
+	BT_INFO("%s: New tty speeds: %d/%d", hu->hdev->name,
 	       tty->termios.c_ispeed, tty->termios.c_ospeed);
 }
 
