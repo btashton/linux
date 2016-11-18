@@ -1357,7 +1357,7 @@ static int hci_dev_do_open(struct hci_dev *hdev)
 		if (hci_dev_test_flag(hdev, HCI_UNCONFIGURED))
 			ret = __hci_unconf_init(hdev);
 	}
-
+	BT_INFO("POSTSETUP RET: %d",ret);
 	if (hci_dev_test_flag(hdev, HCI_CONFIG)) {
 		/* If public address change is configured, ensure that
 		 * the address gets programmed. If the driver does not
@@ -1370,6 +1370,7 @@ static int hci_dev_do_open(struct hci_dev *hdev)
 		else
 			ret = -EADDRNOTAVAIL;
 	}
+	BT_INFO("POSTCONFIG RET: %d",ret);
 
 	if (!ret) {
 		if (!hci_dev_test_flag(hdev, HCI_UNCONFIGURED) &&

@@ -183,6 +183,7 @@ static int bcm_request_irq(struct bcm_data *bcm)
 	/* If this is not a platform device, do not enable PM functionalities */
 	mutex_lock(&bcm_device_lock);
 	if (!bcm_device_exists(bdev)) {
+		BT_INFO("BT IRQ FAILED.  DEVICE NOT REGISTERED");
 		err = -ENODEV;
 		goto unlock;
 	}
