@@ -278,6 +278,7 @@ static int bcm_open(struct hci_uart *hu)
 {
 	struct bcm_data *bcm;
 	struct list_head *p;
+	BT_INFO("OPEN");
 
 	bt_dev_dbg(hu->hdev, "hu %p", hu);
 
@@ -317,6 +318,7 @@ static int bcm_close(struct hci_uart *hu)
 {
 	struct bcm_data *bcm = hu->priv;
 	struct bcm_device *bdev = bcm->dev;
+	BT_INFO("CLOSE");
 
 	bt_dev_dbg(hu->hdev, "hu %p", hu);
 
@@ -365,6 +367,7 @@ static int bcm_setup(struct hci_uart *hu)
 	unsigned int speed;
 	int err;
 
+	BT_INFO("SETUP");
 	bt_dev_dbg(hu->hdev, "hu %p", hu);
 
 	hu->hdev->set_diag = bcm_set_diag;

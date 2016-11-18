@@ -1272,7 +1272,7 @@ done:
 static int hci_dev_do_open(struct hci_dev *hdev)
 {
 	int ret = 0;
-
+	BT_INFO("DO OPEN");
 	BT_DBG("%s %p", hdev->name, hdev);
 
 	hci_req_sync_lock(hdev);
@@ -1322,6 +1322,7 @@ static int hci_dev_do_open(struct hci_dev *hdev)
 		ret = -EIO;
 		goto done;
 	}
+	BT_INFO("ABOUT TO START THE INIT TASKS");
 
 	set_bit(HCI_RUNNING, &hdev->flags);
 	hci_sock_dev_event(hdev, HCI_DEV_OPEN);
@@ -1405,6 +1406,7 @@ static int hci_dev_do_open(struct hci_dev *hdev)
 			mgmt_power_on(hdev, ret);
 		}
 	} else {
+		BT_INFO("INIT FAILED FLAGS: %d", hdev->flags);
 		/* Init failed, cleanup */
 		flush_work(&hdev->tx_work);
 		flush_work(&hdev->cmd_work);
@@ -1430,6 +1432,7 @@ static int hci_dev_do_open(struct hci_dev *hdev)
 
 done:
 	hci_req_sync_unlock(hdev);
+	BT_INFO("DO OPEN DONE: %d", ret);
 	return ret;
 }
 
